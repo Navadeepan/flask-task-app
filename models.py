@@ -5,9 +5,8 @@ from dbconfig import db
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    task = db.Column(db.String(200), nullable=False)
-    created_date = db.Column(db.DateTime, default=datetime)
+    task_name = db.Column(db.String(200), nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     def __repr__(self):
-        # This represents how you want to see task and date information after a query.
-        return '<Task: {task}, Created Date: {created_date}>'.format(task=self.task, created_date=self.created_date)
+        return "Task( %s, %s)" % (self.task_name, self.created_date)
