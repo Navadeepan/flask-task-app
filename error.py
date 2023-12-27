@@ -7,3 +7,4 @@ UNAUTHORIZED = ({"message": "Wrong credentials."}, 401)
 
 DOES_NOT_EXIST = ({"message": "Does not exists."}, 409)
 HEADER_NOT_FOUND = ({"message": "Header does not exists."}, 999)
+DATA_NOT_FOUND = ({"message": "Input data could not be found."}, 400)
