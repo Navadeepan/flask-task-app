@@ -1,10 +1,25 @@
 from flask import request
 from flask_restful import Resource
 
+import error
 from dbconfig import db
 from models import Task
 
-import error
+
+def get_all_tasks():
+    tasks = Task.query.all()
+    if not tasks:
+        return error.NO_INPUT_400
+    tasks_list = [
+        {
+            'task_name': task.task_name,
+            'description': task.description,
+            'created_date': task.created_date.strftime('%Y-%m-%d %H:%M:%S') if task.created_date else None
+        }
+        for task in tasks
+    ]
+
+    return tasks_list
 
 
 class Welcome(Resource):
@@ -17,19 +32,7 @@ class GetTasks(Resource):
     @staticmethod
     def get():
         try:
-            tasks = Task.query.all()
-            if not tasks:
-                return error.NO_INPUT_400
-            tasks_list = [
-                {
-                    'task_name': task.task_name,
-                    'description': task.description,
-                    'created_date': task.created_date.strftime('%Y-%m-%d %H:%M:%S') if task.created_date else None
-                }
-                for task in tasks
-            ]
-
-            return tasks_list
+            return get_all_tasks()
         except Exception as e:
             return str(e)
 
@@ -46,7 +49,7 @@ class AddTask(Resource):
             task = Task(task_name=task, description=description)
             db.session.add(task)
             db.session.commit()
-            return GetTasks.get(), 201
+            return get_all_tasks(), 201
         except Exception as e:
             return str(e)
 
@@ -65,7 +68,7 @@ class UpdateTask(Resource):
             if 'description' in data:
                 task.description = data['description']
             db.session.commit()
-            return GetTasks.get()
+            return get_all_tasks(), 200
         except Exception as e:
             return str(e)
 
@@ -80,6 +83,6 @@ class DeleteTask(Resource):
                 return error.DOES_NOT_EXIST
             db.session.delete(task)
             db.session.commit()
-            return GetTasks.get()
+            return get_all_tasks(), 200
         except Exception as e:
             return str(e)
